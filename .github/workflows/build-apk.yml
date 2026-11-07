@@ -8,7 +8,7 @@ on:
         required: true
         default: 'Ajax Handebol'
       club_url:
-        description: 'URL do Club App (ex: https://google.com)'
+        description: 'URL do Club App (ex: https://app.clube.com)'
         required: true
         default: 'https://google.com'
       app_id:
@@ -30,9 +30,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Configurar Gradle
-        uses: gradle/actions/setup-gradle@v3
-
       - name: Injetar Configuracoes do Clube
         run: |
           sed -i 's|const val CLUB_URL = ".*"|const val CLUB_URL = "${{ github.event.inputs.club_url }}"|g' app/src/main/java/com/sportech/base/AppConfig.kt
@@ -41,6 +38,7 @@ jobs:
 
       - name: Gerar Wrapper e Compilar APK
         run: |
+          sudo apt-get update && sudo apt-get install -y gradle
           gradle wrapper
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
